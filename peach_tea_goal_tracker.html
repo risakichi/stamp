@@ -1,0 +1,169 @@
+
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Peach & Tea Goal Tracker</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New&display=swap');
+
+    body {
+      font-family: 'Zen Kaku Gothic New', sans-serif;
+      background: linear-gradient(135deg, #ffe4e1, #d0f0ef);
+      margin: 0;
+      padding: 20px;
+      color: #305858;
+    }
+
+    h1 {
+      text-align: center;
+      font-size: 1.8em;
+      color: #7f9c9f;
+      margin-bottom: 10px;
+    }
+
+    .subtitle {
+      text-align: center;
+      font-size: 1em;
+      color: #a08785;
+      margin-bottom: 30px;
+    }
+
+    .goal {
+      background: #ffffffcc;
+      border: 1px solid #f2d1cf;
+      padding: 15px;
+      border-radius: 16px;
+      margin-bottom: 16px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+      transition: all 0.2s;
+    }
+
+    .goal:hover {
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    }
+
+    .goal-title {
+      font-size: 1.2em;
+      font-weight: 500;
+      margin-bottom: 8px;
+    }
+
+    .stamps {
+      font-size: 1.3em;
+      margin-bottom: 10px;
+    }
+
+    button {
+      background-color: #fcb6b1;
+      color: white;
+      border: none;
+      padding: 6px 12px;
+      margin-right: 8px;
+      border-radius: 10px;
+      cursor: pointer;
+      font-size: 0.9em;
+    }
+
+    button:hover {
+      background-color: #fa9a9a;
+    }
+
+    #new-goal-input {
+      width: 70%;
+      padding: 10px;
+      margin-right: 10px;
+      font-size: 1em;
+      border-radius: 10px;
+      border: 1px solid #ccc;
+      background: #ffffffdd;
+    }
+
+    #reset-button {
+      background-color: #98d7c2;
+      margin-top: 20px;
+    }
+
+    #goal-list {
+      max-width: 600px;
+      margin: auto;
+    }
+
+    .input-area {
+      text-align: center;
+      margin-top: 30px;
+    }
+  </style>
+</head>
+<body>
+  <h1>🍑 Peach & Tea Tracker</h1>
+  <div class="subtitle">アイスピーチティー香る夏、今日も目標をひとつずつ。</div>
+
+  <div id="goal-list"></div>
+
+  <div class="input-area">
+    <input type="text" id="new-goal-input" placeholder="目標を入力（例：朝ヨガ10分）" />
+    <button onclick="addGoal()">＋ 追加</button>
+    <br />
+    <button id="reset-button" onclick="resetAll()">🔄 すべてリセット</button>
+  </div>
+
+  <script>
+    let goals = JSON.parse(localStorage.getItem("goals") || "[]");
+
+    function saveGoals() {
+      localStorage.setItem("goals", JSON.stringify(goals));
+    }
+
+    function renderGoals() {
+      const list = document.getElementById("goal-list");
+      list.innerHTML = "";
+      goals.forEach((goal, index) => {
+        const goalDiv = document.createElement("div");
+        goalDiv.className = "goal";
+        goalDiv.innerHTML = `
+          <div class="goal-title">📌 ${goal.title}</div>
+          <div class="stamps">🌿 ${"⭐️".repeat(goal.stamps)}</div>
+          <button onclick="addStamp(${index})">＋スタンプ</button>
+          <button onclick="deleteGoal(${index})">削除</button>
+        `;
+        list.appendChild(goalDiv);
+      });
+    }
+
+    function addGoal() {
+      const input = document.getElementById("new-goal-input");
+      const title = input.value.trim();
+      if (title) {
+        goals.push({ title: title, stamps: 0 });
+        input.value = "";
+        saveGoals();
+        renderGoals();
+      }
+    }
+
+    function addStamp(index) {
+      goals[index].stamps++;
+      saveGoals();
+      renderGoals();
+    }
+
+    function deleteGoal(index) {
+      goals.splice(index, 1);
+      saveGoals();
+      renderGoals();
+    }
+
+    function resetAll() {
+      if (confirm("すべての目標を削除しますか？")) {
+        goals = [];
+        saveGoals();
+        renderGoals();
+      }
+    }
+
+    renderGoals();
+  </script>
+</body>
+</html>
